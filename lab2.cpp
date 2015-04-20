@@ -1,9 +1,12 @@
+/*
+Name: David Zhang
+SID: 861156108
+Date: 4/18/15
+*/
+
 #include <iostream>
 #include <forward_list>
 #include "lab2.h"
-
-
-
 
 bool isPrime(int i)
 {
