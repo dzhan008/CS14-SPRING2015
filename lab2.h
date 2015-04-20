@@ -1,196 +1,169 @@
-#ifndef _LAB2_H_
-#define _LAB2_H_
+//Name: Michaella Sheng
+//SID: 861162403
+//Date: April 13, 2015
+
+#ifndef LAB2_H
+#define LAB2_H
 
 #include <forward_list>
 #include <iostream>
 
-using namespace std;
-
-template <typename Type> 
+template<typename Type>
 struct Node
 {
-    Type value;
-    Node* next;
-    
-    Node(Type val)
-    :value(val), next(0)
-    {}
+    Type data;
+    Node<Type>* next;
+    Node<Type>(Type data) : data(data), next(0) {}
 };
 
-bool isPrime(int i);
-int primeCount(forward_list<int> lst);
-
-template <typename Type> 
-void listCopy(forward_list<Type> L, forward_list<Type>& P);
-template <typename Type> 
-void printLots(forward_list<Type> L, forward_list<Type> P);
-
-template <typename Type> 
+template<typename Type>
 class List
 {
     private:
         Node<Type>* head;
         Node<Type>* tail;
-    
     public:
-        List();
+        int size() const;
+        void display() const;
+        void push_front(Type value);
         void elementSwap(int pos);
-        void push_back(Type T);
-        void display();
-        
-        int size();
-        
- 
 };
 
-template <typename Type>
-List<Type>::List()
-:head(0), tail(0)
-{}
-
-template <typename Type> 
-void List<Type>::elementSwap(int pos)
+template<typename Type>
+//Keeps a counter that increses by one everytime a Node is traversed.
+int List<Type>::size() const
 {
-    if(size() == 0)
+    int count = 0;
+    for(Node<Type>* temp = head; temp != tail; temp = temp->next)
     {
-        std::cout << "Error: The list is empty." << std::endl;
-        return;
+        ++count;
     }
-    if(pos < 0)
-    {
-        std::cout << "Error: Position is negative." << std::endl;
-        return;
-    }
-    if(pos + 1 > size())
-    {
-        std::cout << "Error: Out of bounds." << std::endl;
-        return;
-    }
-    
-    Node<Type>* temp = head;
-    Node<Type>* temp2;
-    for (int i = 0; i < pos - 1; ++i)
-    {
-        temp = temp->next;
-    }
-    
-    if(pos == 0)
-    {
-        temp2 = temp->next;
-        temp->next = temp2->next;
-        temp2->next = temp;
-        
-        head = temp2;
-    }
-    else
-    {
-        temp2 = temp->next;
-        if(temp2->next == tail)
-        {
-            temp->next = temp2->next;
-            temp2->next = temp2->next->next;
-            temp->next->next = temp2;
-            tail = temp2;
-        }
-        else
-        {
-            temp->next = temp2->next;
-            temp2->next = temp2->next->next;
-            temp->next->next = temp2;
-        }
-    }
+    return count;
+}
 
-    if(temp2 == tail)
+template<typename Type>
+void List<Type>::display() const
+{
+    if(head == 0)   //returns if list is empty
     {
-        tail = temp;
+        return;
+    }
+    for(Node<Type>* curr = head; curr != tail; curr = curr->next)
+    {
+        std::cout << curr->data << std::endl;
     }
 }
 
-template <typename Type>
-void List<Type>::push_back(Type T)
+template<typename Type>
+void List<Type>::push_front(Type value)
 {
-    if(head == 0)
+    Node<Type>* temp = new Node<Type>(value);
+    temp->next = head;
+    head = temp;
+    if (tail == 0)
     {
-        Node<Type>* temp = new Node<Type>(T);
-        head = temp;
         tail = head;
     }
-    else
-    {
-        Node<Type>* temp = new Node<Type>(T);
-        tail->next = temp;
-        tail = temp;
-    }
 }
-
-template <typename Type>
-void List<Type>::display()
+template<typename Type>
+//Locates Node at the postions, then alters the links so that their order
+//in the list is now swapped.
+void List<Type>::elementSwap(int pos)
 {
-    Node<Type>* pos = head;
-    
-    for(pos = head; pos != 0; pos = pos->next)
+    //Checks for invalid position and list size
+    if(pos < 0 || size() < 2 || pos >= size() - 1)
     {
-        std::cout << pos->value << " ";
+        return; //Nothing is done to the list.
     }
-}
-
-template <typename Type>
-int List<Type>::size()
-{
-    if(head == 0)
+    Node<Type>* temp_1 = head;
+    for(int count = 0; ; ++count, temp_1 = temp_1->next)
     {
-        return 0;
-    }
-    Node<Type>* pos = head;
-    int counter = 0;
-    for (pos = head; pos != 0; pos = pos->next)
-    {
-        counter++;
-    }
-    return counter;
-}
-
-
-template <typename Type> 
-void listCopy(std::forward_list<Type> L, std::forward_list<Type>& P)
-{
-    typename std::forward_list<Type>::iterator iter = P.begin();
-    std::forward_list<Type> N;
-    
-    int sz = 0;
-    
-    for(auto i = P.begin(); i != P.end(); ++i)
-    {
-       sz++;
-    }
-    for(int i = 0; i < sz - 1; ++i)
-    {
-        iter++;
-    }
-    
-    for(auto it = L.begin(); it != L.end(); it++)
-    {
-        P.emplace_after(iter, *it);
-    }
-}
-
-template <typename Type> 
-void printLots(forward_list<Type> L, forward_list<Type> positions)
-{
-    typename forward_list<Type>::iterator it = L.begin();
-    int counter = 0;
-    for(auto pos = positions.begin(); pos != positions.end(); pos++)
-    {
-        while(counter != *pos)
+        if(count == pos - 1)
         {
-            counter++;
-            it++;
+            Node<Type>* temp_2 = temp_1->next;
+            temp_1->next = temp_2->next;
+            if(temp_2->next == tail)
+            {
+                tail->next = temp_2;
+                temp_2->next = 0;
+                tail = temp_2;
+                return;
+            }
+            temp_2->next = temp_2->next->next;
+            temp_1->next->next = temp_2;
+            return;
         }
-        if(counter == *pos)
-        {
-            std::cout << *it << " ";
-        }
+    }
+}
 
+bool isPrime(int i);
+int primeCount(std::forward_list<int> lst);
+template<typename Type>
+//void listCopy(std::forward_list<Type> source, std::forward_list<Type>& dest);
+void listCopy(std::forward_list<Type> source, std::forward_list<Type>& dest)
+{
+    //Nothing can be copied.
+    if(source.empty())
+    {
+        return;
+    }
+    //Elements are simply "pushed back" where begin() would be.
+    if(dest.empty())
+    {
+        auto it_2 = dest.before_begin();
+        for(auto it_1 = source.begin(); it_1 != source.end(); ++it_1)
+        {
+            dest.emplace_after(it_2, *it_1);
+        }
+        return;
+    }
+    //Use count to calculate the final Node, since there is no size
+    //function, set the iterator to the last Node, then add source's Nodes
+    //onto the end by emplacing after the final dest Node.
+    int count = 0;
+    auto it_2 = dest.begin();
+    for( ; it_2 != dest.end(); ++it_2, ++count)
+    {}
+    
+    it_2 = dest.begin();
+    for(int i = 0; i < count - 1; ++it_2, ++i)
+    {}
+    for(auto it_1 = source.begin(); it_1 != source.end(); ++it_1)
+    {
+        dest.emplace_after(it_2, *it_1);
+    }
+    
+}
+template<typename Type>
+//void printLots(std::forward_list<Type> output, std::forward_list<int> pos);
+void printLots(std::forward_list<Type> output, std::forward_list<int> pos)
+{
+    //Nothing will be printed in the case of an empty list
+    if(pos.empty() || output.empty())
+    {
+        std::cout << "List empty." << std::endl;
+        return;
+    }
+    //Keeps track of number of Nodes in the output list
+    int size = 0;
+    auto it_1 = output.begin();
+    for(it_1 = output.begin(); it_1 != output.end(); ++it_1, ++size)
+    {}
+    //Sets an int to the value of the pos list, checks if it is greater than
+    //the size of the output list, then an iterator iterates through the list
+    //until it reaches the position stored by count, and outputs it
+    int count = 0;
+    for(auto it_2 = pos.begin(); count < size; ++it_2)
+    {
+        count = *it_2;
+        if(count >= size)
+        {
+            return;
+        }
+        it_1 = output.begin();
+        for(int i = 0; i < count; ++it_1, ++i)
+        {}
+        std::cout << *it_1 << std::endl;
     }
 }
 

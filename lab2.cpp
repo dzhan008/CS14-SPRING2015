@@ -1,41 +1,37 @@
-#include <iostream>
-#include <forward_list>
+//Name: Michaella Sheng
+//SID: 861162403
+//Date: April 18, 2015
+
 #include "lab2.h"
 
-
-
-
+//Returns true if an int is prime
 bool isPrime(int i)
 {
-    if(i == 1)
+    for(int factor = i-1; factor > 1; --factor)
     {
-        return false;
-    }
-    for(int factor = i - 1; factor > 1; factor--) //Start from the i - 1, since we know i % 0 is 0
-    {
-        if(i % factor == 0)   //If factor divide into i return false
+        if(i % factor == 0)
         {
             return false;
         }
     }
-    return true; //Otherwise return true.
+    return true;
 }
 
-int primeCount(forward_list<int> lst)
+//Counts the number of Nodes with prime data values
+int primeCount(std::forward_list<int> lst)
 {
-    if(lst.empty()) //If list's size is 0, return 0;
+    if(lst.empty())
     {
         return 0;
     }
-    else if(isPrime(lst.front())) //If the number is prime, pop the front, add one, call the function again.
+    else if(isPrime(lst.front()))
     {
         lst.pop_front();
         return 1 + primeCount(lst);
     }
-    else //If it isn't prime, pop the front and call the function again.
+    else
     {
         lst.pop_front();
         return primeCount(lst);
     }
-    
 }
