@@ -1,0 +1,31 @@
+a. The selection sort program is stable because at the end of every traversal the smallest element of the container is stored. There will be a check to see if the smallest element equals to the current
+iterator's element of the firt for loop. If it does equal to that number then no swaps are necessary.
+
+b. This can be done by making a vector of integers and setting it all to the same number. If there are no swaps made, then the sort is stable. The function for this is written below (and shown in main.cc):
+
+void vector_test_2()
+{
+    std::vector<int> hello;
+    hello.push_back(1);
+    hello.push_back(1);
+    hello.push_back(1);
+    hello.push_back(1);
+    hello.push_back(1);
+    hello.push_back(1);
+    hello.push_back(1);
+    hello.push_back(1);
+    
+    std::cout << "Pre: ";
+    for(auto i: hello)
+    {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+    selectionsort(hello);
+    std::cout << "Post: ";
+    for(auto i: hello)
+    {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+}
